@@ -183,47 +183,82 @@ class Program
     {
         return delegate (int value)
         {
+            if (value < 10)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                switch(value){
+                    case 10:
+                        return "A";
+                    case 11:
+                        return "B";
+                    case 12:
+                        return "C";
+                    case 13:
+                        return "D";
+                    case 14:
+                        return "E";
+                    case 15:
+                        return "F";
+                    default:
+                        return "";
+                };
+            }
             //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         };
     }
     //Zadanie 2
     //zwróć delegata typu operation, który dodaje oba argumenty 
     public static operation AddOperation()
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return delegate (double a, double b)
+        {
+            return a + b;
+        };
     }
 
     //Zadanie 3
     //wywołaj przekazanego delegata op z parametrami a i b, a wynik delegata zwróć jako wartość metody Calculate
     public static double Calculate(operation op, double a, double b)
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return op.Invoke(a, b);
     }
 
     //Zadanie 4
     //Zwróć wartość delegata typu Func, który zwraca powtórzony łańcuch (pierwszy argument) n razy (drugi argument) 
     public static Func<string, int, string> Repeat()
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return delegate (string text, int repeat)
+        {
+            string result = "";
+            for (int i = 0; i < repeat; i++)
+            {
+                result = result + text;
+            }
+            return result;
+        };
     }
 
     //Zadanie 5
     //zwroć w metodzie lambdę, która wyświetla na konsoli przekazany łańcuch wielkimi literami
     public static Action<string> StringConsumer()
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return delegate (string text)
+        {
+            Console.WriteLine(text.ToUpper());
+        };
     }
     //Zadanie 6
     //zwroć w metodzie lambdę, która zwraca argument podniesiony do kwadratu
     public static Func<double, double> DoubleFunction()
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return delegate (double number)
+        {
+            return number * number;
+        };
     }
     //Zadanie 7
     //zwróć w metodzie lambdę, która zwraca prawdę, jeśli argument jest poprawnym numerem telefonu:
@@ -231,8 +266,24 @@ class Program
     //- każdy znak jest cyfrą
     public static Predicate<string> IsPhoneNumber()
     {
-        //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-        throw new NotImplementedException();
+        return delegate (string number)
+        {
+            if (number.Length == 9)
+            {
+                for (int i = 0; i < number.Length; i++)
+                {
+                    if (!Char.IsNumber(number[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        };
     }
     public static List<Person> LoadPeople(List<String> RawData, Predicate<string> validator)
     {
@@ -258,7 +309,18 @@ class Program
     //jeśli obie części zawierają poprawne dane to predykat zwarac true
     public static List<Person> ProcessPeople(List<String> data)
     {
-        return LoadPeople(data, null);
+        Predicate<string> validator = (s) =>
+        {
+            string[] tokens = s.Split(" ");
+            string phone = tokens[0];
+            int ects = int.Parse(tokens[1]);
+            if (phone.Length == 9 && ects > 0) {
+                return true;
+            }
+            return false;
+        };
+
+        return LoadPeople(data, validator);
     }
 
     //Zadanie 9
@@ -266,10 +328,18 @@ class Program
     public static string MessangerSubsciber(Messenger messenger, String message)
     {
         string receivedMessage = null;
-        //poniżej wpisz lambdę, która jest subskrybentem obiektu messanger
+        messenger.BrodcastMessage += Messenger_BrodcastMessage;
         messenger.SendToAll(message);
+
+        void Messenger_BrodcastMessage(object sender, string e)
+        {
+            receivedMessage = e;
+        }
+
         return receivedMessage;
     }
+
+    
 }
 record Person(string Phone, int Ects);
 
